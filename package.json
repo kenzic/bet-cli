@@ -1,0 +1,33 @@
+{
+  "name": "bet-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "bet": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@types/object-hash": "^3.0.6",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "fast-glob": "^3.3.2",
+    "fuse.js": "^7.0.0",
+    "ink": "^6.6.0",
+    "ink-markdown": "^1.0.4",
+    "ink-table": "^3.1.0",
+    "object-hash": "^3.0.0",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.2.13",
+    "typescript": "^5.6.3"
+  }
+}
