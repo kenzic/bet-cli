@@ -1,5 +1,19 @@
 {
   "name": "bet-cli",
+  "description": "Explore and jump between local projects.",
+  "author": "Chris Mckenzie",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenzic/bet-cli"
+  },
+  "homepage": "https://github.com/kenzic/bet-cli",
+  "keywords": [
+    "cli",
+    "project",
+    "management",
+    "navigation"
+  ],
   "version": "0.1.0",
   "private": true,
   "type": "module",

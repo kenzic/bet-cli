@@ -1,6 +1,6 @@
 # bet
 
-Explore and jump between local projects.
+Keep your house in order. Explore and jump between local projects.
 
 **bet** is a lightweight project index for your machine: point it at one or more “root” folders (like `~/code`), let it scan for projects, then use fast commands to **search**, **inspect**, and **jump** to them.
 
