@@ -51,6 +51,13 @@ pnpm install
 pnpm build
 ```
 
+Run unit tests (Vitest):
+
+```sh
+pnpm test
+pnpm test:coverage   # with coverage report
+```
+
 ## Quick start
 
 ### 1) Index your project roots
