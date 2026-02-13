@@ -89,8 +89,8 @@ export function registerInfo(program: Command): void {
             </Text>
             <Text dimColor>{project.path}</Text>
             <Box marginTop={1} flexDirection="column">
-              <Text bold>{`Group: ${project.group}`}</Text>
-              <Text bold>{`Root: ${project.root}`}</Text>
+              <Text bold>{`Root: ${project.rootName}`}</Text>
+              <Text bold>{`Root path: ${project.root}`}</Text>
               <Text bold>{`Git: ${hasGit ? "yes" : "no"}`}</Text>
               <Text bold>{`README: ${project.hasReadme ? "yes" : "no"}`}</Text>
               <Text
@@ -132,8 +132,8 @@ export function registerInfo(program: Command): void {
       process.stdout.write(`${chalk.bold(project.slug)}\n`);
       process.stdout.write(`${chalk.dim(project.path)}\n\n`);
 
-      process.stdout.write(`${chalk.bold("Group:")} ${project.group}\n`);
-      process.stdout.write(`${chalk.bold("Root:")} ${project.root}\n`);
+      process.stdout.write(`${chalk.bold("Root:")} ${project.rootName}\n`);
+      process.stdout.write(`${chalk.bold("Root path:")} ${project.root}\n`);
       process.stdout.write(`${chalk.bold("Git:")} ${hasGit ? "yes" : "no"}\n`);
       process.stdout.write(
         `${chalk.bold("README:")} ${project.hasReadme ? "yes" : "no"}\n\n`,

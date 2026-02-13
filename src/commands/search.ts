@@ -15,8 +15,8 @@ function relativePath(projectPath: string, root: string): string {
   return rel || path.basename(projectPath);
 }
 
-function formatLabel(slug: string, group: string, relPath: string): string {
-  return `${slug} [${group}] ${relPath}`;
+function formatLabel(slug: string, rootName: string, relPath: string): string {
+  return `${slug} [${rootName}] ${relPath}`;
 }
 
 export function registerSearch(program: Command): void {
@@ -47,7 +47,7 @@ export function registerSearch(program: Command): void {
         }
         for (const project of results) {
           const rel = relativePath(project.path, project.root);
-          process.stdout.write(`${formatLabel(project.slug, project.group, rel)}\n`);
+          process.stdout.write(`${formatLabel(project.slug, project.rootName, rel)}\n`);
         }
         return;
       }
@@ -56,7 +56,7 @@ export function registerSearch(program: Command): void {
         const rel = relativePath(project.path, project.root);
         return {
           type: 'item',
-          label: formatLabel(project.slug, project.group, rel),
+          label: formatLabel(project.slug, project.rootName, rel),
           value: project,
         };
       });

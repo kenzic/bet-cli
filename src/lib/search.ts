@@ -8,7 +8,8 @@ export function searchProjects(projects: Project[], query: string): Project[] {
       'slug',
       'name',
       'path',
-      'group',
+      'rootName',
+      'root',
       'user.tags',
       'user.description',
       'auto.description'

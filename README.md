@@ -105,6 +105,7 @@ After that:
 
 - **`bet update`**: Scan configured roots and rebuild the project index.
   - **First-time setup**: `bet update --roots "$HOME/code,$HOME/work"`
+  - If you pass `--roots` when you already have roots in config, you will be warned and must confirm (or use `--force` when not in a TTY).
   - **Optional**: `--cron` installs an hourly `crontab` entry that runs `bet update` and logs output to your bet config directory
 - **`bet list`**: List indexed projects (interactive by default).
   - **`--plain`**: non-interactive output
@@ -123,7 +124,7 @@ After that:
 bet stores its data in:
 
 - **Config dir**: `~/.config/bet/` (or `$XDG_CONFIG_HOME/bet/`)
-- **Roots**: `config.json`
+- **Roots**: `config.json` — each root is `{ "path": "/absolute/path", "name": "display-name" }`. The name defaults to the top folder name and is used when listing/grouping projects.
 - **Project index**: `projects.json`
 
 These are plain JSON files—easy to inspect, back up, or edit.

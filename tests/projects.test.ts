@@ -3,8 +3,6 @@ import path from "node:path";
 import {
   listProjects,
   findBySlug,
-  computeGroup,
-  groupLabel,
   projectLabel,
 } from "../src/lib/projects.js";
 import type { Config, Project } from "../src/lib/types.js";
@@ -15,7 +13,7 @@ const makeProject = (overrides: Partial<Project>): Project => ({
   name: "a",
   path: "/root/a",
   root: "/root",
-  group: "root",
+  rootName: "root",
   hasGit: true,
   hasReadme: true,
   auto: { lastIndexedAt: new Date().toISOString() },
@@ -24,19 +22,19 @@ const makeProject = (overrides: Partial<Project>): Project => ({
 
 describe("projects", () => {
   describe("listProjects", () => {
-    it("returns projects sorted by group then slug", () => {
+    it("returns projects sorted by rootName then slug", () => {
       const config: Config = {
         version: 1,
         roots: [],
         projects: {
-          "/root/c": makeProject({ path: "/root/c", slug: "c", group: "root" }),
-          "/root/a": makeProject({ path: "/root/a", slug: "a", group: "root" }),
-          "/other/x": makeProject({ path: "/other/x", slug: "x", group: "other" }),
+          "/root/c": makeProject({ path: "/root/c", slug: "c", rootName: "root" }),
+          "/root/a": makeProject({ path: "/root/a", slug: "a", rootName: "root" }),
+          "/other/x": makeProject({ path: "/other/x", slug: "x", rootName: "other" }),
         },
       };
       const list = listProjects(config);
       expect(list.map((p) => p.slug)).toEqual(["x", "a", "c"]);
-      expect(list.map((p) => p.group)).toEqual(["other", "root", "root"]);
+      expect(list.map((p) => p.rootName)).toEqual(["other", "root", "root"]);
     });
   });
 
@@ -60,29 +58,9 @@ describe("projects", () => {
     });
   });
 
-  describe("computeGroup", () => {
-    it("returns first path segment when project is under root", () => {
-      const root = "/code";
-      const projectPath = "/code/work/myapp";
-      expect(computeGroup(root, projectPath)).toBe("work");
-    });
-
-    it("returns basename of root when project equals root", () => {
-      const root = "/code/repo";
-      expect(computeGroup(root, root)).toBe("repo");
-    });
-  });
-
-  describe("groupLabel", () => {
-    it("returns group string", () => {
-      const p = makeProject({ group: "mygroup" });
-      expect(groupLabel(p)).toBe("mygroup");
-    });
-  });
-
   describe("projectLabel", () => {
-    it("returns group/slug", () => {
-      const p = makeProject({ group: "g", slug: "s" });
+    it("returns rootName/slug", () => {
+      const p = makeProject({ rootName: "g", slug: "s" });
       expect(projectLabel(p)).toBe("g/s");
     });
   });

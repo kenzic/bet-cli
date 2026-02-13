@@ -18,16 +18,21 @@ export type Project = {
   name: string;
   path: string;
   root: string;
-  group: string;
+  rootName: string;
   hasGit: boolean;
   hasReadme: boolean;
   auto: ProjectAutoMetadata;
   user?: ProjectUserMetadata;
 };
 
+export type RootConfig = {
+  path: string;
+  name: string;
+};
+
 export type AppConfig = {
   version: number;
-  roots: string[];
+  roots: RootConfig[];
 };
 
 export type ProjectsConfig = {
@@ -36,7 +41,7 @@ export type ProjectsConfig = {
 
 export type Config = {
   version: number;
-  roots: string[];
+  roots: RootConfig[];
   projects: Record<string, Project>;
 };
 

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
-import { AppConfig, Config, ProjectsConfig } from "./types.js";
+import { AppConfig, Config, ProjectsConfig, RootConfig } from "./types.js";
 import { normalizeAbsolute } from "../utils/paths.js";
 
 const CONFIG_DIR = process.env.XDG_CONFIG_HOME
@@ -33,14 +33,32 @@ export function getProjectsPath(): string {
   return PROJECTS_PATH;
 }
 
+function normalizeRoots(parsedRoots: unknown): RootConfig[] {
+  if (!Array.isArray(parsedRoots)) return [];
+  const result: RootConfig[] = [];
+  for (const r of parsedRoots) {
+    if (typeof r === "string") {
+      const abs = normalizeAbsolute(r);
+      result.push({ path: abs, name: path.basename(abs) });
+    } else if (r && typeof r === "object" && "path" in r && typeof (r as RootConfig).path === "string") {
+      const root = r as RootConfig;
+      const abs = normalizeAbsolute(root.path);
+      const name = (root.name?.trim() || path.basename(abs));
+      result.push({ path: abs, name });
+    }
+  }
+  return result;
+}
+
 async function readAppConfig(): Promise<AppConfig> {
   try {
     const raw = await fs.readFile(CONFIG_PATH, "utf8");
-    const parsed = JSON.parse(raw) as AppConfig;
+    const parsed = JSON.parse(raw) as { version?: number; roots?: unknown };
+    const roots = normalizeRoots(parsed.roots ?? []);
     return {
       ...DEFAULT_APP_CONFIG,
-      ...parsed,
-      roots: parsed.roots ?? [],
+      version: parsed.version ?? 1,
+      roots,
     };
   } catch (error) {
     return { ...DEFAULT_APP_CONFIG };
@@ -59,14 +77,28 @@ async function readProjectsConfig(): Promise<ProjectsConfig> {
   }
 }
 
+function normalizeProjectRootName(project: { root: string; rootName?: string; group?: string }, roots: RootConfig[]): string {
+  if (project.rootName?.trim()) return project.rootName.trim();
+  const matched = roots.find((r) => r.path === project.root);
+  if (matched) return matched.name;
+  return path.basename(project.root);
+}
+
 export async function readConfig(): Promise<Config> {
   const [appConfig, projectsConfig] = await Promise.all([
     readAppConfig(),
     readProjectsConfig(),
   ]);
+  const projects = projectsConfig.projects;
+  const normalizedProjects: Record<string, import("./types.js").Project> = {};
+  for (const [id, p] of Object.entries(projects)) {
+    const rootName = normalizeProjectRootName(p, appConfig.roots);
+    const { group: _group, ...rest } = p as import("./types.js").Project & { group?: string };
+    normalizedProjects[id] = { ...rest, rootName } as import("./types.js").Project;
+  }
   return {
     ...appConfig,
-    ...projectsConfig,
+    projects: normalizedProjects,
   };
 }
 
@@ -98,14 +130,14 @@ export async function writeConfig(config: Config): Promise<void> {
   ]);
 }
 
-export function resolveRoots(inputRoots: string[]): string[] {
+export function resolveRoots(inputRoots: RootConfig[]): RootConfig[] {
   const seen = new Set<string>();
-  const resolved: string[] = [];
+  const resolved: RootConfig[] = [];
   for (const root of inputRoots) {
-    const abs = normalizeAbsolute(root);
+    const abs = normalizeAbsolute(root.path);
     if (!seen.has(abs)) {
       seen.add(abs);
-      resolved.push(abs);
+      resolved.push({ path: abs, name: root.name?.trim() || path.basename(abs) });
     }
   }
   return resolved;
