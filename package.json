@@ -15,7 +15,6 @@
     "navigation"
   ],
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "bin": {
     "bet": "dist/index.js"
