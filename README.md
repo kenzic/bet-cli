@@ -34,30 +34,6 @@ If/when this is published to npm, it’s intended to be installable as:
 npm install -g bet
 ```
 
-If you’re installing from this repo (until it’s published), you can still install it globally via a link:
-
-```sh
-pnpm install
-pnpm build
-npm link
-```
-
-### Development setup (contributors)
-
-To work on bet locally (without necessarily linking it globally), install deps and build:
-
-```sh
-pnpm install
-pnpm build
-```
-
-Run unit tests (Vitest):
-
-```sh
-pnpm test
-pnpm test:coverage   # with coverage report
-```
-
 ## Quick start
 
 ### 1) Index your project roots
@@ -128,3 +104,36 @@ bet stores its data in:
 - **Project index**: `projects.json`
 
 These are plain JSON files—easy to inspect, back up, or edit.
+
+### Advanced filtering with `--json`
+
+You can combine `bet list --json` with [jq](https://stedolan.github.io/jq/) for powerful, scriptable project filtering. Here are some practical examples:
+
+- Find all projects with uncommitted changes:
+
+  ```sh
+  bet list --json | jq 'map(select(.auto.dirty))'
+  ```
+
+- Show projects that were started after a given date:
+  ```sh
+  bet list --json | jq 'map(select(.auto.startedAt > "2026-01-01T00:00:00Z"))'
+  ```
+
+You can customize these jq expressions to target any field present in the project index for fully custom workflows.
+
+### Development setup (contributors)
+
+To work on bet locally (without necessarily linking it globally), install deps and build:
+
+```sh
+pnpm install
+pnpm build
+```
+
+Run unit tests (Vitest):
+
+```sh
+pnpm test
+pnpm test:coverage   # with coverage report
+```
