@@ -31,7 +31,7 @@ Requires **Node >= 20**.
 If/when this is published to npm, it’s intended to be installable as:
 
 ```sh
-npm install -g bet
+npm install -g bet-cli
 ```
 
 ## Quick start
