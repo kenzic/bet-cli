@@ -7,13 +7,14 @@ import { registerInfo } from "./commands/info.js";
 import { registerGo } from "./commands/go.js";
 import { registerPath } from "./commands/path.js";
 import { registerShell } from "./commands/shell.js";
+import { registerCompletion } from "./commands/completion.js";
 
 const program = new Command();
 
 program
   .name("bet")
   .description("Explore and jump between local projects.")
-  .version("0.1.0");
+  .version("0.1.2");
 
 registerUpdate(program);
 registerList(program);
@@ -22,5 +23,6 @@ registerInfo(program);
 registerGo(program);
 registerPath(program);
 registerShell(program);
+registerCompletion(program);
 
 program.parseAsync(process.argv);

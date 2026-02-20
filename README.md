@@ -77,6 +77,15 @@ After that:
 - `bet go <slug>` will `cd` your current shell into the project
 - `bet list` / `bet search` can also “select and jump” in interactive mode
 
+**Project name autocompletion:** To complete project names (slugs) when using `bet go`, `bet path`, or `bet info`, add to your rc file:
+
+```sh
+eval "$(bet completion zsh)"   # zsh
+eval "$(bet completion bash)"  # bash
+```
+
+Then Tab-complete the slug argument after `bet go `, `bet path `, or `bet info `.
+
 ## Core commands
 
 - **`bet update`**: Scan configured roots and rebuild the project index.
@@ -94,6 +103,7 @@ After that:
   - **`--print`**: print selected path only (no shell `cd`)
   - **`--no-enter`**: do not run the project’s `onEnter` hook (if configured)
 - **`bet shell`**: Print the shell integration snippet (see above).
+- **`bet completion [bash|zsh]`**: Print shell completion script for project name autocompletion (see above).
 
 ## Config & data files
 
