@@ -5,12 +5,7 @@ import { DEFAULT_IGNORES } from "./ignore.js";
 import { isSubpath } from "../utils/paths.js";
 import { isInsideGitRepo } from "./git.js";
 
-const README_PATTERNS = [
-  "**/README.md",
-  "**/readme.md",
-  "**/Readme.md",
-  "**/README.MD",
-];
+const README_PATTERNS = ["**/README.md", "**/readme.txt"];
 
 function resolveProjectRoot(matchPath: string): string {
   const container = path.dirname(matchPath);
@@ -79,6 +74,7 @@ export async function scanRoots(roots: string[]): Promise<ProjectCandidate[]> {
       onlyFiles: true,
       followSymbolicLinks: false,
       ignore: DEFAULT_IGNORES,
+      caseSensitiveMatch: false,
     });
 
     for (const match of readmeMatches) {
