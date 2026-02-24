@@ -1,7 +1,6 @@
 import path from "node:path";
 import fg from "fast-glob";
 import { ProjectCandidate } from "./types.js";
-import { DEFAULT_IGNORES } from "./ignore.js";
 import { isSubpath } from "../utils/paths.js";
 import { isInsideGitRepo } from "./git.js";
 
@@ -44,12 +43,12 @@ function addCandidate(
   map.set(projectPath, next);
 }
 
-export async function scanRoots(roots: string[]): Promise<ProjectCandidate[]> {
+export async function scanRoots(roots: string[], ignores: string[]): Promise<ProjectCandidate[]> {
   const candidates = new Map<string, ProjectCandidate>();
 
   for (const root of roots) {
     // Exclude .git/** from ignores when scanning for .git directories
-    const gitIgnores = DEFAULT_IGNORES.filter(
+    const gitIgnores = ignores.filter(
       (pattern) => pattern !== "**/.git/**",
     );
     const gitMatches = await fg("**/.git", {
@@ -73,7 +72,7 @@ export async function scanRoots(roots: string[]): Promise<ProjectCandidate[]> {
       dot: true,
       onlyFiles: true,
       followSymbolicLinks: false,
-      ignore: DEFAULT_IGNORES,
+      ignore: ignores,
       caseSensitiveMatch: false,
     });
 

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { computeMetadata } from "../src/lib/metadata.js";
+import { DEFAULT_IGNORES } from "../src/lib/ignore.js";
 
 const mockFg = vi.fn();
 vi.mock("fast-glob", () => ({
@@ -31,7 +32,7 @@ describe("metadata", () => {
       { stats: { mtimeMs: now.getTime() - 10000 } },
       { stats: { mtimeMs: now.getTime() - 5000 } },
     ]);
-    const result = await computeMetadata("/some/project", false);
+    const result = await computeMetadata("/some/project", false, DEFAULT_IGNORES);
     expect(result.lastIndexedAt).toBeDefined();
     expect(result.startedAt).toBeDefined();
     expect(result.lastModifiedAt).toBeDefined();
@@ -47,7 +48,7 @@ describe("metadata", () => {
     const readme = await import("../src/lib/readme.js");
     vi.mocked(readme.readReadmeDescription).mockResolvedValue("A cool project");
 
-    const result = await computeMetadata("/repo", true);
+    const result = await computeMetadata("/repo", true, DEFAULT_IGNORES);
     expect(result.startedAt).toBe("2021-06-01T00:00:00Z");
     expect(result.dirty).toBe(true);
     expect(result.description).toBe("A cool project");

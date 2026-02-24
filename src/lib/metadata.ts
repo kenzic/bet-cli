@@ -1,10 +1,9 @@
 import fg from 'fast-glob';
-import { DEFAULT_IGNORES } from './ignore.js';
 import { ProjectAutoMetadata } from './types.js';
 import { getDirtyStatus, getFirstCommitDate } from './git.js';
 import { readReadmeDescription } from './readme.js';
 
-export async function computeMetadata(projectPath: string, hasGit: boolean): Promise<ProjectAutoMetadata> {
+export async function computeMetadata(projectPath: string, hasGit: boolean, ignores: string[]): Promise<ProjectAutoMetadata> {
   const nowIso = new Date().toISOString();
 
   const entries = await fg('**/*', {
@@ -12,7 +11,7 @@ export async function computeMetadata(projectPath: string, hasGit: boolean): Pro
     dot: true,
     onlyFiles: true,
     followSymbolicLinks: false,
-    ignore: DEFAULT_IGNORES,
+    ignore: ignores,
     stats: true,
   });
 

@@ -1,3 +1,13 @@
+```
+  ██
+  ██
+  ████████████
+             ██
+             ████████
+                    ╲╲
+                   ╲╲
+```
+
 # bet
 
 Keep your house in order. Explore and jump between local projects.
@@ -91,7 +101,7 @@ Then Tab-complete the slug argument after `bet go `, `bet path `, or `bet info `
 - **`bet update`**: Scan configured roots and rebuild the project index.
   - **First-time setup**: `bet update --roots "$HOME/code,$HOME/work"`
   - If you pass `--roots` when you already have roots in config, you will be warned and must confirm (or use `--force` when not in a TTY).
-  - **Optional**: `--cron` installs an hourly `crontab` entry that runs `bet update` and logs output to your bet config directory
+  - **Optional**: `--cron [frequency]` — install a `crontab` entry that runs `bet update` on a schedule. Use Nm (1–59), Nh (1–24), or Nd (1–31), e.g. `--cron 5m`, `--cron 1h` (default if omitted), `--cron 2d`. Use `--cron 0` or `--cron false` to remove the cron. Cron stdout/stderr are appended to `~/.config/bet/cron-update.log`; structured logs go to the main log file (see [Logging](#logging)).
 - **`bet list`**: List indexed projects (interactive by default).
   - **`--plain`**: non-interactive output
   - **`--json`**: machine-readable output
@@ -111,9 +121,19 @@ bet stores its data in:
 
 - **Config dir**: `~/.config/bet/` (or `$XDG_CONFIG_HOME/bet/`)
 - **Roots**: `config.json` — each root is `{ "path": "/absolute/path", "name": "display-name" }`. The name defaults to the top folder name and is used when listing/grouping projects.
+- **slugParentFolders** (optional): In `config.json`, an array of folder names. When a discovered project path ends in one of these (e.g. `src` or `app`), the project slug is taken from the parent directory name instead. Default in code is `["src", "app"]` when the key is not set.
 - **Project index**: `projects.json`
 
 These are plain JSON files—easy to inspect, back up, or edit.
+
+### Logging
+
+bet writes a structured log file for debugging, especially when `bet update` runs from cron:
+
+- **macOS**: `~/Library/Logs/bet/bet.log`
+- **Linux**: `~/.local/state/bet/bet.log` (or `$XDG_STATE_HOME/bet/bet.log`)
+
+Each line is timestamped and includes a level (`DEBUG`, `INFO`, `WARN`, `ERROR`). Set `BET_LOG_LEVEL=debug` for verbose output when troubleshooting (e.g. in your cron environment). When run from cron, stdout/stderr are also captured in `~/.config/bet/cron-update.log`; the main log file is the structured, level-based log.
 
 ### Advanced filtering with `--json`
 

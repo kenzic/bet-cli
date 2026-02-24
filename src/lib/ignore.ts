@@ -9,3 +9,7 @@ export const DEFAULT_IGNORES = [
   "**/.venv/**",
   "**/venv/**",
 ];
+
+export function getEffectiveIgnores(config: { ignores?: string[] }): string[] {
+  return config.ignores !== undefined ? config.ignores : DEFAULT_IGNORES;
+}

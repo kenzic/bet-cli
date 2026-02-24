@@ -50,15 +50,31 @@ function normalizeRoots(parsedRoots: unknown): RootConfig[] {
   return result;
 }
 
+function normalizeIgnores(parsed: unknown): string[] | undefined {
+  if (!Array.isArray(parsed)) return undefined;
+  const list = parsed.filter((x): x is string => typeof x === "string");
+  return list;
+}
+
+function normalizeSlugParentFolders(parsed: unknown): string[] | undefined {
+  if (!Array.isArray(parsed)) return undefined;
+  const list = parsed.filter((x): x is string => typeof x === "string" && x.trim() !== "").map((x) => x.trim());
+  return list.length === 0 ? undefined : list;
+}
+
 async function readAppConfig(): Promise<AppConfig> {
   try {
     const raw = await fs.readFile(CONFIG_PATH, "utf8");
-    const parsed = JSON.parse(raw) as { version?: number; roots?: unknown };
+    const parsed = JSON.parse(raw) as { version?: number; roots?: unknown; ignores?: unknown; slugParentFolders?: unknown };
     const roots = normalizeRoots(parsed.roots ?? []);
+    const ignores = normalizeIgnores(parsed.ignores);
+    const slugParentFolders = normalizeSlugParentFolders(parsed.slugParentFolders);
     return {
       ...DEFAULT_APP_CONFIG,
       version: parsed.version ?? 1,
       roots,
+      ...(ignores !== undefined && { ignores }),
+      ...(slugParentFolders !== undefined && { slugParentFolders }),
     };
   } catch (error) {
     return { ...DEFAULT_APP_CONFIG };
@@ -120,6 +136,8 @@ export async function writeConfig(config: Config): Promise<void> {
   const appConfig: AppConfig = {
     version: config.version,
     roots: config.roots,
+    ...(config.ignores !== undefined && { ignores: config.ignores }),
+    ...(config.slugParentFolders !== undefined && { slugParentFolders: config.slugParentFolders }),
   };
   const projectsConfig: ProjectsConfig = {
     projects: config.projects,

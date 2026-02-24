@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import path from "node:path";
 import { scanRoots } from "../src/lib/scan.js";
+import { DEFAULT_IGNORES } from "../src/lib/ignore.js";
 
 const mockFg = vi.fn();
 vi.mock("fast-glob", () => ({
@@ -24,7 +25,7 @@ describe("scan", () => {
     mockFg
       .mockResolvedValueOnce(["proj/.git"])
       .mockResolvedValueOnce([]);
-    const result = await scanRoots([root]);
+    const result = await scanRoots([root], DEFAULT_IGNORES);
     expect(result.length).toBe(1);
     expect(result[0].path).toBe(path.join(root, "proj"));
     expect(result[0].hasGit).toBe(true);
@@ -35,7 +36,7 @@ describe("scan", () => {
     mockFg
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce(["other/README.md"]);
-    const result = await scanRoots([root]);
+    const result = await scanRoots([root], DEFAULT_IGNORES);
     expect(result.length).toBe(1);
     expect(result[0].path).toBe(path.join(root, "other"));
     expect(result[0].hasReadme).toBe(true);
@@ -46,7 +47,7 @@ describe("scan", () => {
     mockFg
       .mockResolvedValueOnce(["parent/.git", "parent/child/.git"])
       .mockResolvedValueOnce([]);
-    const result = await scanRoots([root]);
+    const result = await scanRoots([root], DEFAULT_IGNORES);
     expect(result.length).toBe(1);
     expect(result[0].path).toBe(path.join(root, "parent"));
   });
@@ -60,7 +61,7 @@ describe("scan", () => {
     mockIsInsideGitRepo.mockImplementation((cwd: string) =>
       Promise.resolve(cwd === projectPath)
     );
-    const result = await scanRoots([root]);
+    const result = await scanRoots([root], DEFAULT_IGNORES);
     expect(result.length).toBe(1);
     expect(result[0].hasGit).toBe(true);
   });
