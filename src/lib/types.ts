@@ -34,6 +34,7 @@ export type AppConfig = {
   version: number;
   roots: RootConfig[];
   ignores?: string[];
+  ignoredPaths?: string[];
   slugParentFolders?: string[];
 };
 
@@ -45,6 +46,7 @@ export type Config = {
   version: number;
   roots: RootConfig[];
   ignores?: string[];
+  ignoredPaths?: string[];
   slugParentFolders?: string[];
   projects: Record<string, Project>;
 };

@@ -8,6 +8,7 @@ import { registerGo } from "./commands/go.js";
 import { registerPath } from "./commands/path.js";
 import { registerShell } from "./commands/shell.js";
 import { registerCompletion } from "./commands/completion.js";
+import { registerIgnore } from "./commands/ignore.js";
 
 const program = new Command();
 
@@ -24,5 +25,6 @@ registerGo(program);
 registerPath(program);
 registerShell(program);
 registerCompletion(program);
+registerIgnore(program);
 
 program.parseAsync(process.argv);

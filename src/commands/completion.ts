@@ -11,6 +11,7 @@ const SUBCOMMANDS = [
   "path",
   "shell",
   "completion",
+  "ignore",
 ];
 
 function zshScript(): string {
@@ -27,6 +28,7 @@ _bet() {
     'path:Print project path'
     'shell:Print shell integration'
     'completion:Print shell completion script'
+    'ignore:Manage ignored project paths'
   )
 
   if (( CURRENT == 2 )); then

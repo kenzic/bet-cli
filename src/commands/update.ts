@@ -6,7 +6,7 @@ import { normalizeAbsolute } from "../utils/paths.js";
 import { installUpdateCron, uninstallUpdateCron, parseCronSchedule, formatScheduleLabel } from "../lib/cron.js";
 import { scanRoots } from "../lib/scan.js";
 import { computeMetadata } from "../lib/metadata.js";
-import { getEffectiveIgnores } from "../lib/ignore.js";
+import { getEffectiveIgnores, isPathIgnored } from "../lib/ignore.js";
 import { Config, Project, RootConfig } from "../lib/types.js";
 import { isInsideGitRepo } from "../lib/git.js";
 import { log } from "../lib/logger.js";
@@ -127,10 +127,14 @@ export function registerUpdate(program: Command): void {
       log.debug("scanning roots", rootPaths.length, "root(s)");
       const ignores = getEffectiveIgnores(config);
       const candidates = await scanRoots(rootPaths, ignores);
-      log.debug("found", candidates.length, "candidate(s)");
+      const ignoredPaths = config.ignoredPaths ?? [];
+      const filteredCandidates = candidates.filter(
+        (c) => !isPathIgnored(c.path, ignoredPaths),
+      );
+      log.debug("found", filteredCandidates.length, "candidate(s) after ignoring paths");
       const projects: Record<string, Project> = {};
 
-      for (const candidate of candidates) {
+      for (const candidate of filteredCandidates) {
         const hasGit = await isInsideGitRepo(candidate.path);
         const auto = await computeMetadata(candidate.path, hasGit, ignores);
         const slug = projectSlug(candidate.path, config.slugParentFolders ?? DEFAULT_SLUG_PARENT_FOLDERS);
@@ -159,6 +163,7 @@ export function registerUpdate(program: Command): void {
         roots: rootsResolved,
         projects,
         ...(config.ignores !== undefined && { ignores: config.ignores }),
+        ...(config.ignoredPaths !== undefined && { ignoredPaths: config.ignoredPaths }),
         ...(config.slugParentFolders !== undefined && { slugParentFolders: config.slugParentFolders }),
       };
 

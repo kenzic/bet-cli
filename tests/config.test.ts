@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { readConfig, resolveRoots, getConfigPath, getProjectsPath } from "../src/lib/config.js";
+import { readConfig, resolveRoots, getConfigPath, getProjectsPath, writeConfig } from "../src/lib/config.js";
 import { getEffectiveIgnores, DEFAULT_IGNORES } from "../src/lib/ignore.js";
 import type { RootConfig } from "../src/lib/types.js";
 
@@ -173,6 +173,52 @@ describe("config", () => {
 
       expect(config.slugParentFolders).toBeUndefined();
     });
+
+    it("reads and normalizes ignoredPaths from config", async () => {
+      const configPath = getConfigPath();
+      const projectsPath = getProjectsPath();
+      const resolvedPath = path.resolve("/code/some-project");
+      vi.mocked(fs.readFile).mockImplementation((p: string) => {
+        if (p === configPath) {
+          return Promise.resolve(
+            JSON.stringify({
+              version: 1,
+              roots: [],
+              ignoredPaths: ["/code/some-project", "~/other"],
+            }),
+          );
+        }
+        if (p === projectsPath) {
+          return Promise.resolve(JSON.stringify({ projects: {} }));
+        }
+        return Promise.reject(new Error("ENOENT"));
+      });
+
+      const config = await readConfig();
+
+      expect(config.ignoredPaths).toBeDefined();
+      expect(config.ignoredPaths).toHaveLength(2);
+      expect(config.ignoredPaths![0]).toBe(resolvedPath);
+      expect(config.ignoredPaths![1]).toBe(path.resolve(process.env.HOME || "", "other"));
+    });
+
+    it("leaves ignoredPaths undefined when not in config", async () => {
+      const configPath = getConfigPath();
+      const projectsPath = getProjectsPath();
+      vi.mocked(fs.readFile).mockImplementation((p: string) => {
+        if (p === configPath) {
+          return Promise.resolve(JSON.stringify({ version: 1, roots: [] }));
+        }
+        if (p === projectsPath) {
+          return Promise.resolve(JSON.stringify({ projects: {} }));
+        }
+        return Promise.reject(new Error("ENOENT"));
+      });
+
+      const config = await readConfig();
+
+      expect(config.ignoredPaths).toBeUndefined();
+    });
   });
 
   describe("getEffectiveIgnores", () => {
@@ -196,6 +242,39 @@ describe("config", () => {
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual({ path: path.resolve("/a/b"), name: "b" });
       expect(result[1]).toEqual({ path: path.resolve("/c"), name: "c" });
+    });
+  });
+
+  describe("writeConfig", () => {
+    it("writes ignoredPaths to app config when present", async () => {
+      const configPath = getConfigPath();
+      const projectsPath = getProjectsPath();
+      vi.mocked(fs.readFile).mockImplementation((p: string) => {
+        if (p === configPath) {
+          return Promise.resolve(JSON.stringify({ version: 1, roots: [] }));
+        }
+        if (p === projectsPath) {
+          return Promise.resolve(JSON.stringify({ projects: {} }));
+        }
+        return Promise.reject(new Error("ENOENT"));
+      });
+      const config = await readConfig();
+      const configWithIgnores = {
+        ...config,
+        ignoredPaths: [path.resolve("/code/foo"), path.resolve("/code/bar")],
+      };
+
+      await writeConfig(configWithIgnores);
+
+      expect(fs.writeFile).toHaveBeenCalledWith(
+        configPath,
+        expect.stringContaining('"ignoredPaths"'),
+        "utf8",
+      );
+      const written = JSON.parse(
+        String(vi.mocked(fs.writeFile).mock.calls.find((c) => c[0] === configPath)![1]),
+      );
+      expect(written.ignoredPaths).toEqual([path.resolve("/code/foo"), path.resolve("/code/bar")]);
     });
   });
 });
