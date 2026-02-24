@@ -89,10 +89,11 @@ export type InstallUpdateCronOptions = {
  * so that `bet update` runs at the given schedule. Idempotent: re-running
  * replaces the existing bet cron block (single cron only).
  * @throws Error if schedule is invalid (see parseCronSchedule).
+ * @returns Paths to the wrapper script and log file for user reference.
  */
 export async function installUpdateCron(
   options: InstallUpdateCronOptions,
-): Promise<void> {
+): Promise<{ wrapperPath: string; logPath: string }> {
   const { nodePath, entryScriptPath, schedule } = options;
   const parsed = parseCronSchedule(schedule);
   const cronExpression = scheduleToCronExpression(parsed);
@@ -167,6 +168,8 @@ export async function installUpdateCron(
     const err = crontabWrite.stderr || crontabWrite.stdout || "unknown";
     throw new Error(`crontab install failed: ${err}`);
   }
+
+  return { wrapperPath, logPath };
 }
 
 /**

@@ -187,12 +187,15 @@ export function registerUpdate(program: Command): void {
           : path.resolve(process.cwd(), process.argv[1] ?? "dist/index.js");
         const cronOpt = options.cron;
         if (cronOpt === true) {
-          await installUpdateCron({
+          const { wrapperPath, logPath } = await installUpdateCron({
             nodePath: process.execPath,
             entryScriptPath,
             schedule: "1h",
           });
           process.stdout.write("Installed cron for bet update (every hour).\n");
+          process.stdout.write(
+            `  Wrapper script: ${wrapperPath}\n  Log file: ${logPath}\n  To view or edit crontab: crontab -l  /  crontab -e\n`,
+          );
         } else if (typeof cronOpt === "string") {
           const normalized = cronOpt.trim().toLowerCase();
           if (normalized === "0" || normalized === "false") {
@@ -201,13 +204,16 @@ export function registerUpdate(program: Command): void {
           } else {
             try {
               const parsed = parseCronSchedule(cronOpt);
-              await installUpdateCron({
+              const { wrapperPath, logPath } = await installUpdateCron({
                 nodePath: process.execPath,
                 entryScriptPath,
                 schedule: cronOpt,
               });
               const label = formatScheduleLabel(parsed);
               process.stdout.write(`Installed cron for bet update (${label}).\n`);
+              process.stdout.write(
+                `  Wrapper script: ${wrapperPath}\n  Log file: ${logPath}\n  To view or edit crontab: crontab -l  /  crontab -e\n`,
+              );
             } catch (err) {
               const message = err instanceof Error ? err.message : String(err);
               log.error(err instanceof Error ? err : new Error(message));
