@@ -15,7 +15,7 @@ const program = new Command();
 program
   .name("bet")
   .description("Explore and jump between local projects.")
-  .version("0.1.2");
+  .version("0.1.3");
 
 registerUpdate(program);
 registerList(program);
