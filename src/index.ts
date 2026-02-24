@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
+import { GroupedHelp } from "./lib/help.js";
 import { registerUpdate } from "./commands/update.js";
 import { registerList } from "./commands/list.js";
 import { registerSearch } from "./commands/search.js";
@@ -11,6 +12,10 @@ import { registerCompletion } from "./commands/completion.js";
 import { registerIgnore } from "./commands/ignore.js";
 
 const program = new Command();
+
+program.createHelp = function createHelp(this: Command) {
+  return Object.assign(new GroupedHelp(), this.configureHelp());
+};
 
 program
   .name("bet")
