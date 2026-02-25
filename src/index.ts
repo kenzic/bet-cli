@@ -11,6 +11,25 @@ import { registerShell } from "./commands/shell.js";
 import { registerCompletion } from "./commands/completion.js";
 import { registerIgnore } from "./commands/ignore.js";
 
+const ASCII_HEADER = `
+                            ░░░░░
+                        ░░░░░░░░░
+                    ░░░░░░░░░░░░░
+                ░░░░░░░░░░░░░░░░░
+            ░░░░░░░░░░░░░   ░░░░░
+        ░░░░░░░░░░░░░       ░░░░░
+      ░░░░░░░░░░░░          ░░░░░
+         ░░░░░░░░░░░░░░░░   ░░░░░
+              ░░░░░░░░░░░░░░░░░░░
+                   ░░░░░░░░░░░░░░
+                        ░░░░░░░░░
+                            ░░░░░
+                            ░░░░░
+                            ░░░░░
+       ░░░░░░░░░░░░░░░░░░░░░░░░░░
+       ░░░░░░░░░░░░░░░░░░░░░░░░░░
+`;
+
 const program = new Command();
 
 program.createHelp = function createHelp(this: Command) {
@@ -31,5 +50,7 @@ registerPath(program);
 registerShell(program);
 registerCompletion(program);
 registerIgnore(program);
+
+program.addHelpText("before", ASCII_HEADER);
 
 program.parseAsync(process.argv);
