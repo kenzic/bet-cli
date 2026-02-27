@@ -162,6 +162,7 @@ export function registerUpdate(program: Command): void {
         version: config.version ?? 1,
         roots: rootsResolved,
         projects,
+        updatedAt: new Date().toISOString(),
         ...(config.ignores !== undefined && { ignores: config.ignores }),
         ...(config.ignoredPaths !== undefined && { ignoredPaths: config.ignoredPaths }),
         ...(config.slugParentFolders !== undefined && { slugParentFolders: config.slugParentFolders }),

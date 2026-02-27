@@ -38,7 +38,7 @@ export function registerIgnore(program: Command): void {
       const rootPaths = config.roots.map((r) => r.path);
       if (!isPathUnderAnyRoot(normalized, rootPaths)) {
         process.stderr.write(
-          `Error: Path must be under a configured root.\n  Path: ${normalized}\n  Roots: ${rootPaths.join(", ")}\n`,
+          `Error: Path must be under a configured root. Use an absolute path (e.g. /path/to/project), not a project slug.\n  Path: ${normalized}\n  Roots: ${rootPaths.join(", ")}\n`,
         );
         process.exitCode = 1;
         return;

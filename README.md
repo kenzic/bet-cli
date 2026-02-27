@@ -1,3 +1,11 @@
+# bet
+
+Keep your house in order. Explore and jump between local projects.
+
+**bet** is a lightweight project index for your machine: point it at one or more “root” folders (like `~/code`), let it scan for projects, then use fast commands to **search**, **inspect**, and **jump** to them.
+
+If your `~/code` folder is chaos, **bet turns it into a map**.
+
 ```
 
                             ░░░░░
@@ -18,14 +26,6 @@
        ░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 ```
-
-# bet
-
-Keep your house in order. Explore and jump between local projects.
-
-**bet** is a lightweight project index for your machine: point it at one or more “root” folders (like `~/code`), let it scan for projects, then use fast commands to **search**, **inspect**, and **jump** to them.
-
-If your `~/code` folder is chaos, **bet turns it into a map**.
 
 ## Why bet?
 
