@@ -95,6 +95,7 @@ async function readProjectsConfig(): Promise<ProjectsConfig> {
     const parsed = JSON.parse(raw) as ProjectsConfig;
     return {
       projects: parsed.projects ?? {},
+      ...(parsed.updatedAt != null && typeof parsed.updatedAt === "string" && { updatedAt: parsed.updatedAt }),
     };
   } catch (error) {
     return { ...DEFAULT_PROJECTS_CONFIG };
@@ -123,6 +124,7 @@ export async function readConfig(): Promise<Config> {
   return {
     ...appConfig,
     projects: normalizedProjects,
+    ...(projectsConfig.updatedAt != null && { updatedAt: projectsConfig.updatedAt }),
   };
 }
 
@@ -150,6 +152,7 @@ export async function writeConfig(config: Config): Promise<void> {
   };
   const projectsConfig: ProjectsConfig = {
     projects: config.projects,
+    ...(config.updatedAt !== undefined && { updatedAt: config.updatedAt }),
   };
   await Promise.all([
     writeAppConfig(appConfig),

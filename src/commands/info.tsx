@@ -1,23 +1,45 @@
 import chalk from "chalk";
 import { Command } from "commander";
-import { readConfig } from "../lib/config.js";
+import React from "react";
 import { render, Box, Text } from "ink";
+import { readConfig } from "../lib/config.js";
 import { findBySlug, listProjects, projectLabel } from "../lib/projects.js";
 import { getDirtyStatus, isInsideGitRepo } from "../lib/git.js";
 import { formatDate } from "../utils/format.js";
 import { promptSelect } from "../ui/prompt.js";
 import { SelectEntry } from "../ui/select.js";
 import { readReadmeContent } from "../lib/readme.js";
-import Table from "../ui/table.js";
+import Markdown from "../ui/markdown.js";
 
-const data: { [key: string]: string }[] = [];
+type MetaRowProps = {
+  label: string;
+  value: string;
+  valueColor?:
+    | "green"
+    | "red"
+    | "yellow"
+    | "blue"
+    | "cyan"
+    | "magenta"
+    | "gray";
+};
+
+const MetaRow: React.FC<MetaRowProps> = ({ label, value, valueColor }) => (
+  <Box>
+    <Text bold color="gray">{`${label}: `}</Text>
+    <Text color={valueColor} bold={!!valueColor}>
+      {value}
+    </Text>
+  </Box>
+);
 
 export function registerInfo(program: Command): void {
   program
     .command("info <slug>")
     .description("Show project details")
     .option("--json", "Print JSON output")
-    .action(async (slug: string, options: { json?: boolean }) => {
+    .option("--full", "Show full README content")
+    .action(async (slug: string, options: { json?: boolean; full?: boolean }) => {
       const config = await readConfig();
       const projects = listProjects(config);
       const matches = findBySlug(projects, slug);
@@ -67,58 +89,96 @@ export function registerInfo(program: Command): void {
       const dirty = hasGit ? await getDirtyStatus(project.path) : undefined;
 
       if (process.stdin.isTTY) {
-        const readme = await readReadmeContent(project.path);
+        const readme = options.full
+          ? await readReadmeContent(project.path, { full: true })
+          : null;
         const markdown = readme ?? description;
 
-        let Markdown: React.FC<{ children: string }> | null = null;
-        try {
-          const markdownModule = await import("ink-markdown");
-          Markdown = (markdownModule.default ??
-            markdownModule) as unknown as React.FC<{
-            children: string;
-          }>;
-        } catch {
-          Markdown = null;
-        }
-
         const view = (
-          <Box flexDirection="column">
-            <Table data={data} />
-            <Text color="green" bold>
-              {project.slug}
-            </Text>
-            <Text dimColor>{project.path}</Text>
-            <Box marginTop={1} flexDirection="column">
-              <Text bold>{`Root: ${project.rootName}`}</Text>
-              <Text bold>{`Root path: ${project.root}`}</Text>
-              <Text bold>{`Git: ${hasGit ? "yes" : "no"}`}</Text>
-              <Text bold>{`README: ${project.hasReadme ? "yes" : "no"}`}</Text>
-              <Text
-                bold
-              >{`Started: ${formatDate(project.auto.startedAt)}`}</Text>
-              <Text
-                bold
-              >{`Last modified: ${formatDate(project.auto.lastModifiedAt)}`}</Text>
-              <Text
-                bold
-              >{`Last indexed: ${formatDate(project.auto.lastIndexedAt)}`}</Text>
-              <Text
-                bold
-              >{`Dirty: ${dirty === undefined ? "unknown" : dirty ? "yes" : "no"}`}</Text>
-              {project.user?.tags?.length ? (
-                <Text>{`Tags: ${project.user.tags.join(", ")}`}</Text>
-              ) : null}
-              {project.user?.onEnter ? (
-                <Text>{`On enter: ${project.user.onEnter}`}</Text>
-              ) : null}
+          <Box flexDirection="column" width="100%">
+            <Box
+              width="100%"
+              borderStyle="single"
+              borderColor="green"
+              paddingX={1}
+              paddingY={1}
+              marginBottom={1}
+            >
+              <Text color="green" bold>
+                {project.slug}
+              </Text>
+              <Text color="cyan">{project.path}</Text>
             </Box>
-            <Box marginTop={1} flexDirection="column">
-              <Text>{chalk.bold("Description")}</Text>
-              {Markdown ? (
-                <Markdown>{markdown}</Markdown>
-              ) : (
-                <Text>{markdown}</Text>
-              )}
+            <Box
+              borderStyle="round"
+              borderColor="cyan"
+              padding={1}
+              flexDirection="column"
+              marginBottom={1}
+            >
+              <Box marginBottom={1}>
+                <Text bold color="magenta">
+                  Details
+                </Text>
+              </Box>
+              <Box flexDirection="column">
+                <MetaRow label="Root" value={project.rootName} />
+                <MetaRow label="Root path" value={project.root} />
+                <MetaRow
+                  label="Git"
+                  value={hasGit ? "yes" : "no"}
+                  valueColor={hasGit ? "green" : "yellow"}
+                />
+                <MetaRow
+                  label="README"
+                  value={project.hasReadme ? "yes" : "no"}
+                  valueColor={project.hasReadme ? "green" : "yellow"}
+                />
+                <MetaRow
+                  label="Started"
+                  value={formatDate(project.auto.startedAt)}
+                />
+                <MetaRow
+                  label="Last modified"
+                  value={formatDate(project.auto.lastModifiedAt)}
+                />
+                <MetaRow
+                  label="Last indexed"
+                  value={formatDate(project.auto.lastIndexedAt)}
+                />
+                <MetaRow
+                  label="Dirty"
+                  value={dirty === undefined ? "unknown" : dirty ? "yes" : "no"}
+                  valueColor={
+                    dirty === undefined ? "yellow" : dirty ? "red" : "green"
+                  }
+                />
+                {project.user?.tags?.length ? (
+                  <Box>
+                    <Text bold color="gray">{`Tags: `}</Text>
+                    <Text color="magenta">{project.user.tags.join(", ")}</Text>
+                  </Box>
+                ) : null}
+                {project.user?.onEnter ? (
+                  <Box>
+                    <Text bold color="gray">{`On enter: `}</Text>
+                    <Text color="blue">{project.user.onEnter}</Text>
+                  </Box>
+                ) : null}
+              </Box>
+            </Box>
+            <Box
+              borderStyle="round"
+              borderColor="magenta"
+              padding={1}
+              flexDirection="column"
+            >
+              <Box marginBottom={1}>
+                <Text bold color="magenta">
+                  Description
+                </Text>
+              </Box>
+              <Markdown>{markdown}</Markdown>
             </Box>
           </Box>
         );
@@ -139,7 +199,11 @@ export function registerInfo(program: Command): void {
         `${chalk.bold("README:")} ${project.hasReadme ? "yes" : "no"}\n\n`,
       );
 
-      process.stdout.write(`${chalk.bold("Description:")} ${description}\n`);
+      const descToShow =
+        options.full && project.hasReadme
+          ? (await readReadmeContent(project.path, { full: true })) ?? description
+          : description;
+      process.stdout.write(`${chalk.bold("Description:")} ${descToShow}\n`);
       process.stdout.write(
         `${chalk.bold("Started:")} ${formatDate(project.auto.startedAt)}\n`,
       );

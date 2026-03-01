@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import chalk from 'chalk';
 import { Box, Text, useInput } from 'ink';
 import { SelectEntry } from './select.js';
 
@@ -67,10 +66,22 @@ export function SearchSelect<T>({
 
   if (items.length === 0) {
     return (
-      <Box flexDirection="column">
-        {title && <Text>{chalk.bold(title)}</Text>}
-        <Text>{`Search: ${query}`}</Text>
-        <Text>No results.</Text>
+      <Box flexDirection="column" borderStyle="round" borderColor="magenta" padding={1}>
+        {title ? (
+          <Box marginBottom={1}>
+            <Text bold color="cyan">
+              {title}
+            </Text>
+          </Box>
+        ) : null}
+        <Box marginBottom={1} flexDirection="row">
+          <Text bold color="yellow">Search: </Text>
+          <Text color="cyan">{query || '…'}</Text>
+        </Box>
+        <Text color="yellow">No results.</Text>
+        <Box marginTop={1}>
+          <Text color="gray">Press Esc to exit.</Text>
+        </Box>
       </Box>
     );
   }
@@ -86,25 +97,45 @@ export function SearchSelect<T>({
   const windowed = items.slice(windowStart, windowEnd);
 
   return (
-    <Box flexDirection="column">
-      {title && <Text>{chalk.bold(title)}</Text>}
-      <Text>{`Search: ${query}`}</Text>
-      {showCount && <Text>{chalk.dim(`${items.length} result(s)`)}</Text>}
-      {windowed.map((row, idx) => {
-        const absoluteIndex = windowStart + idx;
-        const selected = absoluteIndex === selectedRowIndex;
-        return (
-          <Box key={`item-${absoluteIndex}`}>
-            <Text>
-              {selected ? chalk.cyan.bold('› ') : '  '}
-              {selected ? chalk.cyan.bold(row.label) : row.label}
-            </Text>
-            {row.hint ? <Text>{chalk.dim(` ${row.hint}`)}</Text> : null}
-          </Box>
-        );
-      })}
-      <Box marginTop={1}>
-        <Text>{chalk.dim('Type to filter. Use ↑/↓ or j/k. Enter to select. Esc to cancel.')}</Text>
+    <Box flexDirection="column" borderStyle="round" borderColor="magenta" padding={1}>
+      {title ? (
+        <Box marginBottom={1}>
+          <Text bold color="cyan">
+            {title}
+          </Text>
+        </Box>
+      ) : null}
+      <Box marginBottom={1} flexDirection="row">
+        <Text bold color="yellow">Search: </Text>
+        <Text color="green">{query || '…'}</Text>
+        {showCount ? (
+          <Text color="cyan"> · {items.length} result{items.length !== 1 ? 's' : ''}</Text>
+        ) : null}
+      </Box>
+      <Box flexDirection="column">
+        {windowed.map((row, idx) => {
+          const absoluteIndex = windowStart + idx;
+          const selected = absoluteIndex === selectedRowIndex;
+          return (
+            <Box key={`item-${absoluteIndex}`} flexDirection="row">
+              <Text color={selected ? 'green' : undefined} bold={selected}>
+                {selected ? '› ' : '  '}
+                {row.label}
+              </Text>
+              {row.hint ? <Text color="gray"> {row.hint}</Text> : null}
+            </Box>
+          );
+        })}
+      </Box>
+      <Box marginTop={1} flexDirection="row">
+        <Text color="yellow">Type to filter</Text>
+        <Text color="gray"> · </Text>
+        <Text color="yellow">↑/↓ or j/k</Text>
+        <Text color="gray"> · </Text>
+        <Text color="green">Enter</Text>
+        <Text color="gray"> to select · </Text>
+        <Text color="red">Esc</Text>
+        <Text color="gray"> to cancel</Text>
       </Box>
     </Box>
   );

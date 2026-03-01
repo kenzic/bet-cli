@@ -40,6 +40,7 @@ export type AppConfig = {
 
 export type ProjectsConfig = {
   projects: Record<string, Project>;
+  updatedAt?: string;
 };
 
 export type Config = {
@@ -49,6 +50,7 @@ export type Config = {
   ignoredPaths?: string[];
   slugParentFolders?: string[];
   projects: Record<string, Project>;
+  updatedAt?: string;
 };
 
 export type ProjectCandidate = {

@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import chalk from 'chalk';
 import { Box, Text, useInput } from 'ink';
 
 export type SelectGroup = {
@@ -65,11 +64,17 @@ export function SelectList<T>({
 
   if (items.length === 0) {
     return (
-      <Box flexDirection="column">
-        {title && <Text>{chalk.bold(title)}</Text>}
-        <Text>No results.</Text>
+      <Box flexDirection="column" borderStyle="round" borderColor="magenta" padding={1}>
+        {title ? (
+          <Box marginBottom={1}>
+            <Text bold color="cyan">
+              {title}
+            </Text>
+          </Box>
+        ) : null}
+        <Text color="yellow">No results.</Text>
         <Box marginTop={1}>
-        <Text>{chalk.dim('Press Esc to exit.')}</Text>
+          <Text color="gray">Press Esc to exit.</Text>
         </Box>
       </Box>
     );
@@ -86,33 +91,49 @@ export function SelectList<T>({
   const windowed = items.slice(windowStart, windowEnd);
 
   return (
-    <Box flexDirection="column">
-      {title && <Text>{chalk.bold(title)}</Text>}
-      {windowed.map((row, idx) => {
-        const absoluteIndex = windowStart + idx;
-        const selected = row.type === 'item' && absoluteIndex === selectedRowIndex;
+    <Box flexDirection="column" borderStyle="round" borderColor="magenta" padding={1}>
+      {title ? (
+        <Box marginBottom={1}>
+          <Text bold color="cyan">
+            {title}
+          </Text>
+        </Box>
+      ) : null}
+      <Box flexDirection="column">
+        {windowed.map((row, idx) => {
+          const absoluteIndex = windowStart + idx;
+          const selected = row.type === 'item' && absoluteIndex === selectedRowIndex;
 
-        if (row.type === 'group') {
-          const colored = row.color ? chalk.hex(row.color)(`[${row.label}]`) : `[${row.label}]`;
+          if (row.type === 'group') {
+            return (
+              <Box key={`group-${absoluteIndex}`} marginTop={idx === 0 ? 0 : 1}>
+                <Text bold color={row.color ?? 'cyan'}>
+                  [{row.label}]
+                </Text>
+              </Box>
+            );
+          }
+
           return (
-            <Box key={`group-${absoluteIndex}`} marginTop={idx === 0 ? 0 : 1}>
-              <Text>{chalk.bold(colored)}</Text>
+            <Box key={`item-${absoluteIndex}`} flexDirection="row">
+              <Text color={selected ? 'green' : undefined} bold={selected}>
+                {selected ? '› ' : '  '}
+                {row.label}
+              </Text>
+              {row.hint ? (
+                <Text color="gray"> {row.hint}</Text>
+              ) : null}
             </Box>
           );
-        }
-
-        return (
-          <Box key={`item-${absoluteIndex}`}>
-            <Text>
-              {selected ? chalk.cyan.bold('› ') : '  '}
-              {selected ? chalk.cyan.bold(row.label) : row.label}
-            </Text>
-            {row.hint ? <Text>{chalk.dim(` ${row.hint}`)}</Text> : null}
-          </Box>
-        );
-      })}
+        })}
+      </Box>
       <Box marginTop={1}>
-        <Text>{chalk.dim('Use ↑/↓ or j/k. Enter to select. Esc to cancel.')}</Text>
+        <Text color="yellow">↑/↓ or j/k</Text>
+        <Text color="gray"> · </Text>
+        <Text color="green">Enter</Text>
+        <Text color="gray"> to select · </Text>
+        <Text color="red">Esc</Text>
+        <Text color="gray"> to cancel</Text>
       </Box>
     </Box>
   );
