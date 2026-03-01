@@ -1,19 +1,27 @@
 import chalk from "chalk";
 import { Command } from "commander";
 import React from "react";
-import { readConfig } from "../lib/config.js";
 import { render, Box, Text } from "ink";
+import { readConfig } from "../lib/config.js";
 import { findBySlug, listProjects, projectLabel } from "../lib/projects.js";
 import { getDirtyStatus, isInsideGitRepo } from "../lib/git.js";
 import { formatDate } from "../utils/format.js";
 import { promptSelect } from "../ui/prompt.js";
 import { SelectEntry } from "../ui/select.js";
 import { readReadmeContent } from "../lib/readme.js";
+import Markdown from "../ui/markdown.js";
 
 type MetaRowProps = {
   label: string;
   value: string;
-  valueColor?: "green" | "red" | "yellow" | "blue" | "cyan" | "magenta" | "gray";
+  valueColor?:
+    | "green"
+    | "red"
+    | "yellow"
+    | "blue"
+    | "cyan"
+    | "magenta"
+    | "gray";
 };
 
 const MetaRow: React.FC<MetaRowProps> = ({ label, value, valueColor }) => (
@@ -30,7 +38,8 @@ export function registerInfo(program: Command): void {
     .command("info <slug>")
     .description("Show project details")
     .option("--json", "Print JSON output")
-    .action(async (slug: string, options: { json?: boolean }) => {
+    .option("--full", "Show full README content")
+    .action(async (slug: string, options: { json?: boolean; full?: boolean }) => {
       const config = await readConfig();
       const projects = listProjects(config);
       const matches = findBySlug(projects, slug);
@@ -80,19 +89,10 @@ export function registerInfo(program: Command): void {
       const dirty = hasGit ? await getDirtyStatus(project.path) : undefined;
 
       if (process.stdin.isTTY) {
-        const readme = await readReadmeContent(project.path);
+        const readme = options.full
+          ? await readReadmeContent(project.path, { full: true })
+          : null;
         const markdown = readme ?? description;
-
-        let Markdown: React.FC<{ children: string }> | null = null;
-        try {
-          const markdownModule = await import("ink-markdown");
-          Markdown = (markdownModule.default ??
-            markdownModule) as unknown as React.FC<{
-            children: string;
-          }>;
-        } catch {
-          Markdown = null;
-        }
 
         const view = (
           <Box flexDirection="column" width="100%">
@@ -134,9 +134,18 @@ export function registerInfo(program: Command): void {
                   value={project.hasReadme ? "yes" : "no"}
                   valueColor={project.hasReadme ? "green" : "yellow"}
                 />
-                <MetaRow label="Started" value={formatDate(project.auto.startedAt)} />
-                <MetaRow label="Last modified" value={formatDate(project.auto.lastModifiedAt)} />
-                <MetaRow label="Last indexed" value={formatDate(project.auto.lastIndexedAt)} />
+                <MetaRow
+                  label="Started"
+                  value={formatDate(project.auto.startedAt)}
+                />
+                <MetaRow
+                  label="Last modified"
+                  value={formatDate(project.auto.lastModifiedAt)}
+                />
+                <MetaRow
+                  label="Last indexed"
+                  value={formatDate(project.auto.lastIndexedAt)}
+                />
                 <MetaRow
                   label="Dirty"
                   value={dirty === undefined ? "unknown" : dirty ? "yes" : "no"}
@@ -169,11 +178,7 @@ export function registerInfo(program: Command): void {
                   Description
                 </Text>
               </Box>
-              {Markdown ? (
-                <Markdown>{markdown}</Markdown>
-              ) : (
-                <Text>{markdown}</Text>
-              )}
+              <Markdown>{markdown}</Markdown>
             </Box>
           </Box>
         );
@@ -194,7 +199,11 @@ export function registerInfo(program: Command): void {
         `${chalk.bold("README:")} ${project.hasReadme ? "yes" : "no"}\n\n`,
       );
 
-      process.stdout.write(`${chalk.bold("Description:")} ${description}\n`);
+      const descToShow =
+        options.full && project.hasReadme
+          ? (await readReadmeContent(project.path, { full: true })) ?? description
+          : description;
+      process.stdout.write(`${chalk.bold("Description:")} ${descToShow}\n`);
       process.stdout.write(
         `${chalk.bold("Started:")} ${formatDate(project.auto.startedAt)}\n`,
       );

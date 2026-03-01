@@ -20,6 +20,7 @@ export async function readReadmePath(
 
 export async function readReadmeContent(
   projectPath: string,
+  options?: { full?: boolean },
 ): Promise<string | undefined> {
   const readmePath = await readReadmePath(projectPath);
   if (!readmePath) return undefined;
@@ -28,7 +29,11 @@ export async function readReadmeContent(
   // remove html tags
   content = content.replace(/<[^>]*>?/g, "");
 
-  // only graph the first 300 characters, and add ... if there are more
+  if (options?.full) {
+    return content;
+  }
+
+  // only grab the first 500 characters, and add ... if there are more
   const truncated = content.slice(0, 500);
   if (content.length > 500) {
     return `${truncated}...`;
