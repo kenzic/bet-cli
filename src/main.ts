@@ -39,7 +39,7 @@ program.createHelp = function createHelp(this: Command) {
 program
   .name("bet")
   .description("Explore and jump between local projects.")
-  .version("0.2.0");
+  .version("0.3.0");
 
 registerUpdate(program);
 registerList(program);
