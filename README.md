@@ -42,6 +42,7 @@ If your `~/code` folder is chaos, **bet turns it into a map**.
 - `bet update` scans those roots and builds an index.
 - Projects are detected using simple signals (today: folders containing **`.git`** and/or a **`README.md`**, with common build dirs ignored).
 - Commands like `list`, `search`, `info`, `path`, and `go` read that index.
+- Commands like `list`, `search`, `info`, `path`, `go`, and `edit` read that index.
 
 ## Install
 
@@ -123,6 +124,9 @@ Then Tab-complete the slug argument after `bet go `, `bet path `, or `bet info `
 - **`bet go <slug>`**: Jump to a project.
   - **`--print`**: print selected path only (no shell `cd`)
   - **`--no-enter`**: do not run the project’s `onEnter` hook (if configured)
+- **`bet edit <slug>`**: Open a project in your editor.
+  - Uses `editor` from `config.json` when set.
+  - Falls back to the system default app opener when `editor` is not set.
 - **`bet shell`**: Print the shell integration snippet (see above).
 - **`bet completion [bash|zsh]`**: Print shell completion script for project name autocompletion (see above).
 
@@ -132,6 +136,7 @@ bet stores its data in:
 
 - **Config dir**: `~/.config/bet/` (or `$XDG_CONFIG_HOME/bet/`)
 - **Roots**: `config.json` — each root is `{ "path": "/absolute/path", "name": "display-name" }`. The name defaults to the top folder name and is used when listing/grouping projects.
+- **editor** (optional): In `config.json`, a command string used by `bet edit`, for example `"code -n"` or `"cursor"`.
 - **slugParentFolders** (optional): In `config.json`, an array of folder names. When a discovered project path ends in one of these (e.g. `src` or `app`), the project slug is taken from the parent directory name instead. Default in code is `["src", "app"]` when the key is not set.
 - **Project index**: `projects.json`
 

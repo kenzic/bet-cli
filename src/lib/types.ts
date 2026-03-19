@@ -33,6 +33,7 @@ export type RootConfig = {
 export type AppConfig = {
   version: number;
   roots: RootConfig[];
+  editor?: string;
   ignores?: string[];
   ignoredPaths?: string[];
   slugParentFolders?: string[];
@@ -46,6 +47,7 @@ export type ProjectsConfig = {
 export type Config = {
   version: number;
   roots: RootConfig[];
+  editor?: string;
   ignores?: string[];
   ignoredPaths?: string[];
   slugParentFolders?: string[];

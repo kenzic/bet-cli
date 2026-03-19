@@ -1,7 +1,7 @@
 import { Help } from "commander";
 import type { Command } from "commander";
 
-const GROUP_1: string[] = ["list", "search", "info", "go", "path"];
+const GROUP_1: string[] = ["list", "search", "info", "go", "edit", "path"];
 const GROUP_2: string[] = ["shell", "completion"];
 const GROUP_3: string[] = ["update", "ignore", "help"];
 
@@ -55,23 +55,24 @@ export class GroupedHelp extends Help {
     }
 
     // Arguments
-    const argumentList = helper.visibleArguments(cmd).map((argument) =>
-      formatItem(
-        helper.argumentTerm(argument),
-        helper.argumentDescription(argument),
-      ),
-    );
+    const argumentList = helper
+      .visibleArguments(cmd)
+      .map((argument) =>
+        formatItem(
+          helper.argumentTerm(argument),
+          helper.argumentDescription(argument),
+        ),
+      );
     if (argumentList.length > 0) {
       output.push("Arguments:", formatList(argumentList), "");
     }
 
     // Options
-    const optionList = helper.visibleOptions(cmd).map((option) =>
-      formatItem(
-        helper.optionTerm(option),
-        helper.optionDescription(option),
-      ),
-    );
+    const optionList = helper
+      .visibleOptions(cmd)
+      .map((option) =>
+        formatItem(helper.optionTerm(option), helper.optionDescription(option)),
+      );
     if (optionList.length > 0) {
       output.push("Options:", formatList(optionList), "");
     }
@@ -105,8 +106,7 @@ export class GroupedHelp extends Help {
       const groupIndices = [...byGroup.keys()].sort((a, b) => a - b);
       for (const idx of groupIndices) {
         const commands = byGroup.get(idx)!;
-        const heading =
-          idx < GROUPS.length ? GROUPS[idx].heading : "Commands";
+        const heading = idx < GROUPS.length ? GROUPS[idx].heading : "Commands";
         const commandList = commands.map((sub) =>
           formatItem(
             helper.subcommandTerm(sub),

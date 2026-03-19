@@ -114,6 +114,54 @@ describe("config", () => {
       expect(config.ignores).toEqual(["**/foo/**", "**/bar"]);
     });
 
+    it("returns editor when set in config", async () => {
+      const configPath = getConfigPath();
+      const projectsPath = getProjectsPath();
+      vi.mocked(fs.readFile).mockImplementation((p: string) => {
+        if (p === configPath) {
+          return Promise.resolve(
+            JSON.stringify({
+              version: 1,
+              roots: [],
+              editor: "code -n",
+            }),
+          );
+        }
+        if (p === projectsPath) {
+          return Promise.resolve(JSON.stringify({ projects: {} }));
+        }
+        return Promise.reject(new Error("ENOENT"));
+      });
+
+      const config = await readConfig();
+
+      expect(config.editor).toBe("code -n");
+    });
+
+    it("normalizes blank editor to undefined", async () => {
+      const configPath = getConfigPath();
+      const projectsPath = getProjectsPath();
+      vi.mocked(fs.readFile).mockImplementation((p: string) => {
+        if (p === configPath) {
+          return Promise.resolve(
+            JSON.stringify({
+              version: 1,
+              roots: [],
+              editor: "   ",
+            }),
+          );
+        }
+        if (p === projectsPath) {
+          return Promise.resolve(JSON.stringify({ projects: {} }));
+        }
+        return Promise.reject(new Error("ENOENT"));
+      });
+
+      const config = await readConfig();
+
+      expect(config.editor).toBeUndefined();
+    });
+
     it("leaves ignores undefined when not in config", async () => {
       const configPath = getConfigPath();
       const projectsPath = getProjectsPath();
@@ -275,6 +323,29 @@ describe("config", () => {
         String(vi.mocked(fs.writeFile).mock.calls.find((c) => c[0] === configPath)![1]),
       );
       expect(written.ignoredPaths).toEqual([path.resolve("/code/foo"), path.resolve("/code/bar")]);
+    });
+
+    it("writes editor to app config when present", async () => {
+      const configPath = getConfigPath();
+      const projectsPath = getProjectsPath();
+      vi.mocked(fs.readFile).mockImplementation((p: string) => {
+        if (p === configPath) {
+          return Promise.resolve(JSON.stringify({ version: 1, roots: [] }));
+        }
+        if (p === projectsPath) {
+          return Promise.resolve(JSON.stringify({ projects: {} }));
+        }
+        return Promise.reject(new Error("ENOENT"));
+      });
+      const config = await readConfig();
+
+      await writeConfig({ ...config, editor: "cursor" });
+
+      expect(fs.writeFile).toHaveBeenCalledWith(
+        configPath,
+        expect.stringContaining('"editor": "cursor"'),
+        "utf8",
+      );
     });
   });
 });

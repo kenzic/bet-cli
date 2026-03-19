@@ -9,6 +9,7 @@ import { registerPath } from "./commands/path.js";
 import { registerShell } from "./commands/shell.js";
 import { registerCompletion } from "./commands/completion.js";
 import { registerIgnore } from "./commands/ignore.js";
+import { registerEdit } from "./commands/edit.js";
 
 const ASCII_HEADER = `
                             ░░░░░   ░░░░░░░░░░░░░░░░░░░░░░░░░░   ░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -45,6 +46,7 @@ registerList(program);
 registerSearch(program);
 registerInfo(program);
 registerGo(program);
+registerEdit(program);
 registerPath(program);
 registerShell(program);
 registerCompletion(program);
