@@ -68,11 +68,25 @@ function normalizeIgnoredPaths(parsed: unknown): string[] | undefined {
   return list.length === 0 ? undefined : list;
 }
 
+function normalizeEditor(parsed: unknown): string | undefined {
+  if (typeof parsed !== "string") return undefined;
+  const trimmed = parsed.trim();
+  return trimmed.length === 0 ? undefined : trimmed;
+}
+
 async function readAppConfig(): Promise<AppConfig> {
   try {
     const raw = await fs.readFile(CONFIG_PATH, "utf8");
-    const parsed = JSON.parse(raw) as { version?: number; roots?: unknown; ignores?: unknown; ignoredPaths?: unknown; slugParentFolders?: unknown };
+    const parsed = JSON.parse(raw) as {
+      version?: number;
+      roots?: unknown;
+      editor?: unknown;
+      ignores?: unknown;
+      ignoredPaths?: unknown;
+      slugParentFolders?: unknown;
+    };
     const roots = normalizeRoots(parsed.roots ?? []);
+    const editor = normalizeEditor(parsed.editor);
     const ignores = normalizeIgnores(parsed.ignores);
     const ignoredPaths = normalizeIgnoredPaths(parsed.ignoredPaths);
     const slugParentFolders = normalizeSlugParentFolders(parsed.slugParentFolders);
@@ -80,6 +94,7 @@ async function readAppConfig(): Promise<AppConfig> {
       ...DEFAULT_APP_CONFIG,
       version: parsed.version ?? 1,
       roots,
+      ...(editor !== undefined && { editor }),
       ...(ignores !== undefined && { ignores }),
       ...(ignoredPaths !== undefined && { ignoredPaths }),
       ...(slugParentFolders !== undefined && { slugParentFolders }),
@@ -146,6 +161,7 @@ export async function writeConfig(config: Config): Promise<void> {
   const appConfig: AppConfig = {
     version: config.version,
     roots: config.roots,
+    ...(config.editor !== undefined && { editor: config.editor }),
     ...(config.ignores !== undefined && { ignores: config.ignores }),
     ...(config.ignoredPaths !== undefined && { ignoredPaths: config.ignoredPaths }),
     ...(config.slugParentFolders !== undefined && { slugParentFolders: config.slugParentFolders }),
