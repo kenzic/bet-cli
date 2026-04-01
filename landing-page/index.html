@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bet | A local project index for developers</title>
+    <meta
+      name="description"
+      content="bet helps developers search, inspect, and jump between local projects without memorizing paths."
+    />
+    <script>
+      window.BET_ANALYTICS = window.BET_ANALYTICS || {
+        gaMeasurementId: "G-CS4JC3HKS5",
+      };
+    </script>
+    <script>
+      (() => {
+        const measurementId = window.BET_ANALYTICS?.gaMeasurementId;
+
+        if (!measurementId || measurementId === "G-XXXXXXXXXX") {
+          return;
+        }
+
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+
+        window.gtag = window.gtag || gtag;
+        gtag("js", new Date());
+        gtag("config", measurementId);
+
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+        document.head.appendChild(script);
+
+        document.addEventListener("DOMContentLoaded", () => {
+          document.querySelectorAll("[data-analytics-event]").forEach((element) => {
+            element.addEventListener("click", () => {
+              window.gtag?.("event", element.dataset.analyticsEvent, {
+                cta_label: element.dataset.analyticsLabel,
+                cta_location: element.dataset.analyticsLocation,
+                link_url: element.getAttribute("href"),
+              });
+            });
+          });
+        });
+      })();
+    </script>
+    <style>
+      :root {
+        --sand: #f5f0e7;
+        --sand-deep: #e2d7c7;
+        --stone: #cfc5b7;
+        --ink: #121617;
+        --ink-soft: #273033;
+        --moss: #6d7b52;
+        --brass: #b08a45;
+        --line: rgba(18, 22, 23, 0.1);
+        --panel: rgba(255, 255, 255, 0.62);
+        --shadow: 0 24px 60px rgba(18, 22, 23, 0.12);
+        --radius-xl: 32px;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --max: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          "Avenir Next",
+          "Segoe UI",
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 0% 0%, rgba(176, 138, 69, 0.18), transparent 24%),
+          radial-gradient(circle at 85% 10%, rgba(109, 123, 82, 0.16), transparent 28%),
+          linear-gradient(180deg, #f9f5ef 0%, #efe8dd 54%, #e8dfd2 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(18, 22, 23, 0.028) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(18, 22, 23, 0.028) 1px, transparent 1px);
+        background-size: 34px 34px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.12));
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        width: min(var(--max), calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 26px 0 72px;
+      }
+
+      .mono,
+      .nav-links a,
+      .eyebrow,
+      .pill,
+      .meta,
+      .terminal,
+      .step-index,
+      .faq summary,
+      code {
+        font-family:
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Cascadia Mono",
+          "Segoe UI Mono",
+          monospace;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 14px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 999px;
+        background: rgba(245, 240, 231, 0.72);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 12px 28px rgba(18, 22, 23, 0.06);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: var(--ink);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.08),
+          0 14px 24px rgba(18, 22, 23, 0.18);
+      }
+
+      .brand-mark img {
+        width: 34px;
+        height: 34px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+      }
+
+      .brand-text {
+        display: grid;
+        gap: 2px;
+      }
+
+      .brand-text strong {
+        font-size: 0.96rem;
+        letter-spacing: 0.05em;
+        text-transform: lowercase;
+      }
+
+      .brand-text span,
+      .nav-links a {
+        font-size: 0.78rem;
+        color: rgba(18, 22, 23, 0.7);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.06fr) minmax(320px, 0.94fr);
+        gap: 24px;
+        margin-top: 24px;
+      }
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: var(--radius-xl);
+        background: var(--panel);
+        backdrop-filter: blur(24px);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-copy {
+        padding: 44px;
+      }
+
+      .hero-copy::after {
+        content: "";
+        position: absolute;
+        right: -90px;
+        bottom: -90px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(176, 138, 69, 0.18), transparent 66%);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(18, 22, 23, 0.62);
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: currentColor;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        max-width: 10ch;
+        font-size: clamp(3.2rem, 6vw, 5.6rem);
+        line-height: 0.92;
+        letter-spacing: -0.065em;
+      }
+
+      .lede {
+        max-width: 42rem;
+        margin-top: 18px;
+        font-size: 1.1rem;
+        line-height: 1.75;
+        color: rgba(18, 22, 23, 0.82);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        padding: 0 20px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-weight: 700;
+      }
+
+      .button-primary {
+        background: var(--ink);
+        color: var(--sand);
+      }
+
+      .button-secondary {
+        border-color: rgba(18, 22, 23, 0.14);
+        background: rgba(255, 255, 255, 0.44);
+        color: var(--ink);
+      }
+
+      .install-links {
+        margin-top: 22px;
+      }
+
+      .hero-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      .pill {
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(18, 22, 23, 0.1);
+        background: rgba(255, 255, 255, 0.46);
+        font-size: 0.75rem;
+        color: rgba(18, 22, 23, 0.72);
+      }
+
+      .hero-demo {
+        padding: 24px;
+        display: grid;
+        gap: 16px;
+        background:
+          linear-gradient(180deg, rgba(18, 22, 23, 0.96), rgba(18, 22, 23, 0.9)),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+        color: #eef0eb;
+      }
+
+      .dots {
+        display: flex;
+        gap: 8px;
+      }
+
+      .dots span {
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+      }
+
+      .dots span:nth-child(1) {
+        background: #d6745b;
+      }
+
+      .dots span:nth-child(2) {
+        background: #d8a84d;
+      }
+
+      .dots span:nth-child(3) {
+        background: #6d7b52;
+      }
+
+      .meta {
+        font-size: 0.78rem;
+        color: rgba(238, 240, 235, 0.62);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .terminal-stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .terminal {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #f8f5ef;
+        font-size: 0.92rem;
+      }
+
+      .terminal span {
+        color: #9cab90;
+      }
+
+      .terminal code {
+        color: inherit;
+        font: inherit;
+        white-space: nowrap;
+      }
+
+      .demo-note {
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(238, 240, 235, 0.72);
+        line-height: 1.65;
+      }
+
+      .section {
+        margin-top: 24px;
+        padding: 30px;
+      }
+
+      .section h2 {
+        font-size: clamp(1.7rem, 2.5vw, 2.5rem);
+        letter-spacing: -0.045em;
+      }
+
+      .section-intro {
+        max-width: 46rem;
+        margin-top: 10px;
+        color: rgba(18, 22, 23, 0.78);
+        line-height: 1.75;
+      }
+
+      .three-up,
+      .two-up {
+        display: grid;
+        gap: 16px;
+        margin-top: 22px;
+      }
+
+      .three-up {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .two-up {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .feature,
+      .step,
+      .quote,
+      .objection,
+      .final-panel {
+        padding: 22px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.48);
+      }
+
+      .feature h3,
+      .step h3,
+      .quote h3,
+      .objection h3,
+      .final-panel h3 {
+        margin-bottom: 10px;
+        font-size: 1.02rem;
+        letter-spacing: -0.03em;
+      }
+
+      .feature p,
+      .step p,
+      .quote p,
+      .objection p,
+      .final-panel p {
+        color: rgba(18, 22, 23, 0.76);
+        line-height: 1.7;
+      }
+
+      .doc-grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 22px;
+      }
+
+      .doc-item {
+        padding: 22px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .doc-item h3 {
+        margin-bottom: 8px;
+        font-size: 1.02rem;
+        letter-spacing: -0.03em;
+      }
+
+      .doc-item p {
+        color: rgba(18, 22, 23, 0.76);
+        line-height: 1.7;
+      }
+
+      .doc-item .terminal-stack {
+        margin-top: 14px;
+      }
+
+      .step {
+        position: relative;
+        padding-top: 54px;
+      }
+
+      .step-index {
+        position: absolute;
+        top: 18px;
+        left: 20px;
+        color: rgba(18, 22, 23, 0.42);
+        font-size: 0.76rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .step .terminal-stack {
+        margin-top: 14px;
+      }
+
+      .quote {
+        background:
+          linear-gradient(180deg, rgba(109, 123, 82, 0.08), transparent 100%),
+          rgba(255, 255, 255, 0.52);
+      }
+
+      .quote p {
+        font-size: 1.05rem;
+        color: var(--ink-soft);
+      }
+
+      .quote span {
+        display: block;
+        margin-top: 14px;
+        color: rgba(18, 22, 23, 0.6);
+        font-size: 0.88rem;
+      }
+
+      .faq {
+        margin-top: 22px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .faq details {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.46);
+        padding: 18px 20px;
+      }
+
+      .faq summary {
+        cursor: pointer;
+        list-style: none;
+        font-size: 0.86rem;
+        color: var(--ink);
+      }
+
+      .faq summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .faq p {
+        margin-top: 12px;
+        color: rgba(18, 22, 23, 0.76);
+        line-height: 1.7;
+      }
+
+      .final {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .footer {
+        margin-top: 24px;
+        padding: 16px 18px;
+        text-align: center;
+        color: rgba(18, 22, 23, 0.62);
+        font-size: 0.78rem;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: fade-up 0.7s ease forwards;
+      }
+
+      .delay-1 { animation-delay: 0.08s; }
+      .delay-2 { animation-delay: 0.16s; }
+      .delay-3 { animation-delay: 0.24s; }
+      .delay-4 { animation-delay: 0.32s; }
+
+      @keyframes fade-up {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .three-up,
+        .two-up,
+        .final {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          width: min(calc(100vw - 20px), var(--max));
+          padding-top: 10px;
+        }
+
+        .nav {
+          flex-direction: column;
+          align-items: flex-start;
+          border-radius: 28px;
+        }
+
+        .hero-copy,
+        .hero-demo,
+        .section {
+          padding: 22px;
+        }
+
+        h1 {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="nav reveal">
+        <div class="brand">
+          <div class="brand-mark" aria-label="bet logo">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Phoenician_beth.svg/2000px-Phoenician_beth.svg.png"
+              alt=""
+            />
+          </div>
+          <div class="brand-text">
+            <strong>bet</strong>
+            <span>local project index</span>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <a
+            href="#why"
+            data-analytics-event="cta_clicked"
+            data-analytics-label="why_bet_nav"
+            data-analytics-location="header_nav"
+            >Why bet</a
+          >
+          <a
+            href="#how"
+            data-analytics-event="cta_clicked"
+            data-analytics-label="how_it_works_nav"
+            data-analytics-location="header_nav"
+            >How it works</a
+          >
+          <a
+            href="#faq"
+            data-analytics-event="cta_clicked"
+            data-analytics-label="faq_nav"
+            data-analytics-location="header_nav"
+            >FAQ</a
+          >
+        </nav>
+      </header>
+
+      <section class="hero">
+        <article class="card hero-copy reveal delay-1">
+          <div class="eyebrow">Developer productivity CLI</div>
+          <h1>Search, inspect, and jump between local projects fast.</h1>
+          <p class="lede">
+            bet gives you a fast way to find the right repo, inspect it, and jump into it
+            without memorizing paths or digging through a crowded <code>~/code</code> folder.
+          </p>
+          <div class="hero-actions">
+            <a
+              class="button button-primary"
+              href="#install"
+              data-analytics-event="cta_clicked"
+              data-analytics-label="install_bet_hero"
+              data-analytics-location="hero"
+              >Install bet</a
+            >
+            <a
+              class="button button-secondary"
+              href="#how"
+              data-analytics-event="cta_clicked"
+              data-analytics-label="see_how_it_works_hero"
+              data-analytics-location="hero"
+              >See how it works</a
+            >
+          </div>
+          <div class="hero-pills">
+            <span class="pill">local project index</span>
+            <span class="pill">shell-native workflow</span>
+            <span class="pill">lightweight setup</span>
+          </div>
+        </article>
+
+        <aside class="card hero-demo reveal delay-2">
+          <div class="dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="meta">core workflow</div>
+          <div class="terminal-stack">
+            <div class="terminal"><span>$</span><code>bet update --roots "$HOME/code,$HOME/work"</code></div>
+            <div class="terminal"><span>$</span><code>bet search payments</code></div>
+            <div class="terminal"><span>$</span><code>bet info marketing-site</code></div>
+            <div class="terminal"><span>$</span><code>bet go api</code></div>
+          </div>
+          <p class="demo-note">
+            Point bet at the places where you keep projects, build the index once, and use it
+            every day when you need to switch context quickly.
+          </p>
+        </aside>
+      </section>
+
+      <section class="card section reveal delay-2" id="why">
+        <div class="eyebrow">Why bet</div>
+        <h2>Your machine probably has more projects than your folder structure can handle.</h2>
+        <p class="section-intro">
+          As your local workspace grows, simple navigation gets slower. Repos end up spread
+          across work, client, and side-project folders. bet gives you one fast interface for
+          finding what you need and getting into it.
+        </p>
+        <div class="three-up">
+          <article class="feature">
+            <h3>Stop guessing paths</h3>
+            <p>
+              Search and jump by project slug instead of remembering exactly where a repo lives.
+            </p>
+          </article>
+          <article class="feature">
+            <h3>Keep local work organized</h3>
+            <p>
+              Define your roots once, scan them, and treat your machine like a structured workspace.
+            </p>
+          </article>
+          <article class="feature">
+            <h3>Stay in the terminal</h3>
+            <p>
+              Use a shell-native workflow that fits how developers already work instead of forcing a new system.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card section reveal delay-3" id="how">
+        <div class="eyebrow">How it works</div>
+        <h2>Set it up once. Use it every day.</h2>
+        <p class="section-intro">
+          bet is intentionally simple. You point it at the directories where you keep projects,
+          let it build the index, and then use focused commands to search, inspect, and jump.
+        </p>
+        <div class="three-up">
+          <article class="step">
+            <div class="step-index">Step 01</div>
+            <h3>Index your roots</h3>
+            <p>
+              Run <code>bet update --roots "$HOME/code,$HOME/work"</code> to scan the places
+              where you keep your projects.
+            </p>
+          </article>
+          <article class="step">
+            <div class="step-index">Step 02</div>
+            <h3>Find what you need</h3>
+            <p>
+              Use commands like <code>bet list</code>, <code>bet search api</code>, and
+              <code>bet info payments</code> to locate the right project fast.
+            </p>
+          </article>
+          <article class="step">
+            <div class="step-index">Step 03</div>
+            <h3>Jump into the work</h3>
+            <p>
+              Add shell integration once, then use <code>bet go &lt;slug&gt;</code> to move into
+              projects without breaking your flow.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card section reveal delay-3">
+        <div class="eyebrow">Functionality</div>
+        <h2>Common tasks, shown as commands.</h2>
+        <p class="section-intro">
+          Think of bet as a focused command set for local project navigation. These are the
+          core workflows most users need day to day.
+        </p>
+        <div class="doc-grid">
+          <article class="doc-item">
+            <h3>Index the directories where you keep code</h3>
+            <p>
+              Run this the first time to tell bet where your projects live.
+            </p>
+            <div class="terminal-stack">
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet update --roots "$HOME/code,$HOME/work"</code>
+              </div>
+            </div>
+          </article>
+          <article class="doc-item">
+            <h3>List everything bet has indexed</h3>
+            <p>
+              Use this when you want a quick view of all known projects.
+            </p>
+            <div class="terminal-stack">
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet list</code>
+              </div>
+            </div>
+          </article>
+          <article class="doc-item">
+            <h3>Search for a project by name</h3>
+            <p>
+              Use fuzzy search when you know part of the repo name but not the exact slug.
+            </p>
+            <div class="terminal-stack">
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet search api</code>
+              </div>
+            </div>
+          </article>
+          <article class="doc-item">
+            <h3>Inspect a project before you open it</h3>
+            <p>
+              Check metadata or print the absolute path when you want to confirm you have the right
+              project.
+            </p>
+            <div class="terminal-stack">
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet info marketing-site</code>
+              </div>
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet path marketing-site</code>
+              </div>
+            </div>
+          </article>
+          <article class="doc-item">
+            <h3>Jump into a project from your shell</h3>
+            <p>
+              After enabling shell integration (add <code></code>eval "$(bet shell)"</code> to your shell rc file), use <code>bet go</code> to change directly into the
+              project directory.
+            </p>
+            <div class="terminal-stack">
+
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet go marketing-site</code>
+              </div>
+            </div>
+          </article>
+          <article class="doc-item">
+            <h3>Open a project in your editor</h3>
+            <p>
+              Launch the selected project with your configured editor or your system default app.
+            </p>
+            <div class="terminal-stack">
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet edit marketing-site</code>
+              </div>
+            </div>
+          </article>
+          <article class="doc-item">
+            <h3>Keep the index up to date automatically</h3>
+            <p>
+              If you want bet to refresh itself on a schedule, install a cron update interval.
+            </p>
+            <div class="terminal-stack">
+              <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                <span>$</span><code>bet update --cron 1h</code>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="card section reveal delay-4" id="faq">
+        <div class="eyebrow">FAQ</div>
+        <h2>Answer the obvious objections early.</h2>
+        <p class="section-intro">
+          Developers already have workarounds. The page should acknowledge that and explain why bet
+          is still useful.
+        </p>
+        <div class="faq">
+          <details open>
+            <summary>I already use <code>cd</code>, <code>find</code>, or <code>fzf</code>.</summary>
+            <p>
+              bet is not trying to replace the shell. It gives frequent project navigation a
+              dedicated, repeatable interface so you spend less time improvising path lookup.
+            </p>
+          </details>
+          <details>
+            <summary>I do not want another tool to maintain.</summary>
+            <p>
+              The setup is lightweight: define roots, run update, and use the index. The value is
+              in removing daily friction, not adding process.
+            </p>
+          </details>
+          <details>
+            <summary>My folders are already fairly organized.</summary>
+            <p>
+              bet becomes more valuable as project count grows or work spreads across multiple roots.
+              Even tidy systems benefit from faster search, inspect, and jump workflows.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="card section reveal delay-4" id="install">
+        <article class="final-panel">
+          <div class="eyebrow">Install</div>
+          <h2>Install bet in three steps.</h2>
+          <p class="section-intro">
+            Install the CLI, build your project index, then enable shell integration so
+            <code>bet go</code> can drop you into a project instantly.
+          </p>
+          <div class="doc-grid" style="margin-top: 22px;">
+            <article class="step">
+              <div class="step-index">Step 01</div>
+              <h3>Install the CLI</h3>
+              <p>Use your preferred package manager.</p>
+              <div class="terminal-stack">
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>pnpm add -g bet-cli</code>
+                </div>
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>npm install -g bet-cli</code>
+                </div>
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>yarn global add bet-cli</code>
+                </div>
+                <!--
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>brew install bet</code>
+                </div>
+                -->
+              </div>
+            </article>
+
+            <article class="step">
+              <div class="step-index">Step 02</div>
+              <h3>Initialize your project index</h3>
+              <p>
+                Point bet at the directories where you keep code. If you want bet to refresh the
+                index automatically, add the optional cron command after the initial setup.
+              </p>
+              <div class="terminal-stack">
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>bet update --roots "$HOME/code,$HOME/work"</code>
+                </div>
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>#</span><code>optional cron for indexing</code>
+                  <span>$</span><code>bet update --cron 1h</code>
+                </div>
+              </div>
+            </article>
+
+            <article class="step">
+              <div class="step-index">Step 03</div>
+              <h3>Enable shell integration and jump in</h3>
+              <p>
+                Add the shell snippet to your rc file, reload your shell, and use
+                <code>bet go</code> to move directly into a project.
+              </p>
+              <div class="terminal-stack">
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>echo 'eval "$(bet shell)"' >> ~/.zshrc</code>
+                </div>
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>source ~/.zshrc</code>
+                </div>
+                <div class="terminal" style="background: rgba(18, 22, 23, 0.92); border-color: rgba(255, 255, 255, 0.06);">
+                  <span>$</span><code>bet go marketing-site</code>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="hero-actions install-links">
+            <a
+              class="button button-primary"
+              href="https://github.com/kenzic/bet-cli"
+              data-analytics-event="cta_clicked"
+              data-analytics-label="view_on_github_final"
+              data-analytics-location="install_section"
+              >View on GitHub</a
+            >
+            <a
+              class="button button-secondary"
+              href="https://www.npmjs.com/package/bet-cli"
+              data-analytics-event="cta_clicked"
+              data-analytics-label="view_on_npm_final"
+              data-analytics-location="install_section"
+              >View on npm</a
+            >
+          </div>
+        </article>
+      </section>
+
+      <div class="footer mono reveal delay-4">
+        bet is an open-source CLI for developers who want a faster way to navigate local projects.
+      </div>
+    </div>
+  </body>
+</html>
