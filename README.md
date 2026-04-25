@@ -2,9 +2,9 @@
 
 Keep your house in order. Explore and jump between local projects.
 
-**bet** is a lightweight project index for your machine: point it at one or more “root” folders (like `~/code`), let it scan for projects, then use fast commands to **search**, **inspect**, and **jump** to them.
+**bet** is a lightweight project index for your machine: point it at one or more “root” folders (like `~/code`), let it scan for projects, then use fast commands to **search**, **inspect**, and **jump** to them — for you _and_ for the AI coding agents working inside your repos.
 
-If your `~/code` folder is chaos, **bet turns it into a map**.
+If your `~/code` folder is chaos, **bet turns it into a map**. The same map an agent can read in a handful of tokens instead of burning a context window on a sprawling `find` dump.
 
 ```
 
@@ -33,6 +33,7 @@ If your `~/code` folder is chaos, **bet turns it into a map**.
 - **No guessing paths**
 - **No brittle aliases**
 - Just indexed homes you can find instantly
+- **Context-efficient for AI agents** — `bet path X` resolves a project name to a path in a handful of tokens; `bet list --json | jq` answers questions across hundreds of projects without spending tokens on a full `find` tree
 
 “bet” (𐤁) is the Phoenician letter for **house**. Every project is a house—bet builds your registry of houses.
 
@@ -167,6 +168,22 @@ You can combine `bet list --json` with [jq](https://stedolan.github.io/jq/) for 
   ```
 
 You can customize these jq expressions to target any field present in the project index for fully custom workflows.
+
+## Use with AI agents
+
+bet ships an agent skill at [`skills/bet/SKILL.md`](skills/bet/SKILL.md) that teaches an LLM-driven coding agent (Claude Code, Cursor, etc.) how to drive the CLI from natural-language requests like _"jump to my payments project"_, _"open the api repo in my editor"_, or _"which of my projects have uncommitted changes?"_.
+
+The skill codifies:
+
+- The **intent → command map** (`path`, `info`, `list`, `search`, `edit`, `update`, `ignore`)
+- The **mandatory `--plain` / `--json` flags** so the interactive TUI does not hang the agent
+- The **`cd "$(bet path X)"` pattern** for non-interactive shells, since `bet go` relies on shell integration the agent cannot load
+- The **`bet list --json` schema** and ready-made `jq` recipes for dirty / recently modified / stale / grouped queries
+- **Slug rules** (including `slugParentFolders`) and common pitfalls
+
+To use it with Claude Code, drop the `skills/bet/` folder into a discovered skills directory (e.g. `~/.claude/skills/bet/`) — or import the skill into whichever harness your agent uses. Once loaded, `/bet` invokes it explicitly, and natural-language triggers in the description load it automatically.
+
+This means an agent can navigate hundreds of projects on your machine using a few-line skill instead of spending tokens on directory listings, ad-hoc shell aliases, or hard-coded paths in its prompt.
 
 ### Development setup (contributors)
 
