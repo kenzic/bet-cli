@@ -117,6 +117,19 @@ export class GroupedHelp extends Help {
       }
     }
 
+    output.push(
+      "AI agent skill:",
+      formatList([
+        "bet ships an agent skill that teaches AI coding agents (Claude Code,",
+        "Cursor, etc.) how to drive this CLI from natural-language requests.",
+        "Install it to supercharge your agent — drop the skills/bet/ folder",
+        "into your harness's skills directory (e.g. ~/.claude/skills/bet/).",
+        "",
+        "  https://github.com/kenzic/bet-cli/tree/main/skills/bet",
+      ]),
+      "",
+    );
+
     return output.join("\n");
   }
 }
